@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace HighSeas
 {
-    public class Gun : MonoBehaviour
+     class Gun : MonoBehaviour
     {
         public Item item;
 
@@ -121,8 +121,10 @@ namespace HighSeas
             base.OnItemLoaded(item);
             if (ShootAction == "Use" || ShootAction == "Trigger")
                 SetShootAction = Interactable.Action.UseStart;
+            else SetShootAction = Interactable.Action.AlternateUseStart;
             if (ReloadAction == "AltUse" || ReloadAction == "AlternateUse" || ReloadAction == "SpellWheel")
                 SetReloadAction = Interactable.Action.AlternateUseStart;
+            else SetReloadAction = Interactable.Action.UseStart;
             item.gameObject.AddComponent<Gun>().Setup(ShootForce, ShootCooldown, ReloadTime, SFXID, ProjectileID, ProjectileUseGravity, ProjectileLife, MaxAmo, SetShootAction, SetReloadAction);
         }
     }
