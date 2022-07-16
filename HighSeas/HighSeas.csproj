@@ -59,6 +59,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Grenade.cs" />
     <Compile Include="Gun.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
