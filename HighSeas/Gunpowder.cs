@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using ThunderRoad;
 using UnityEngine;
+using RainyReignGames.RevealMask;
+using System.Linq;
+using UnityEngine.UI;
 
 namespace HighSeas
 {
@@ -19,40 +22,43 @@ namespace HighSeas
         public override void OnItemLoaded(Item item)
         {
             base.OnItemLoaded(item);
-            GunpowderLiquidContainer imbueLiquidContainer = item.gameObject.GetComponent<GunpowderLiquidContainer>();
-            if (!imbueLiquidContainer)
-                imbueLiquidContainer = item.gameObject.AddComponent<GunpowderLiquidContainer>();
-            imbueLiquidContainer.contents = new List<LiquidData.Content>();
+            GunpowderLiquidContainer liquidContainer = item.gameObject.GetComponent<GunpowderLiquidContainer>();
+            if (!liquidContainer)
+                liquidContainer = item.gameObject.AddComponent<GunpowderLiquidContainer>();
+            liquidContainer.contents = new List<LiquidData.Content>();
             foreach (LiquidData.Content content in contents)
-                imbueLiquidContainer.contents.Add(content.Clone());
-            imbueLiquidContainer.flow = item.GetCustomReference("PotionFlow");
-            imbueLiquidContainer.flow.transform.position += imbueLiquidContainer.flow.transform.up * 0.04f;
-            imbueLiquidContainer.effectFlowId = effectFlowId;
-            imbueLiquidContainer.maxLevel = maxLevel;
-            imbueLiquidContainer.collisionLayer = collisionLayer;
-            imbueLiquidContainer.flowSpeed = flowSpeed;
-            imbueLiquidContainer.flowMinAngle = flowMinAngle;
-            imbueLiquidContainer.flowMaxAngle = flowMaxAngle;
-            imbueLiquidContainer.Init(item);
+                liquidContainer.contents.Add(content.Clone());
+            liquidContainer.liquidLevelText = item.GetCustomReference("PotionIndicator").GetComponent<Text>();
+            liquidContainer.flow = item.GetCustomReference("PotionFlow");
+            liquidContainer.flow.transform.position += liquidContainer.flow.transform.up * 0.04f;
+            liquidContainer.effectFlowId = effectFlowId;
+            liquidContainer.maxLevel = maxLevel;
+            liquidContainer.collisionLayer = collisionLayer;
+            liquidContainer.flowSpeed = flowSpeed;
+            liquidContainer.flowMinAngle = flowMinAngle;
+            liquidContainer.flowMaxAngle = flowMaxAngle;
+            liquidContainer.Init(item);
         }
     }
     public class GunpowderParticleCollisionSpawner : ParticleCollisionSpawner
     {
-
+        public ParticleSystem part;
+        public void Start()
+        {
+            part = GetComponent<ParticleSystem>();
+            collisionEvents = new List<ParticleCollisionEvent>();
+        }
         private void OnParticleCollision(GameObject other)
         {
             if ((effectParticle.module as EffectModuleParticle).collisionLayerMask != ((effectParticle.module as EffectModuleParticle).collisionLayerMask | 1 << other.layer))
                 return;
             Item item = other.GetComponent<Item>();
-            if (!item || item.imbues.Count == 0)
-                return;
             int collisionEvents = particle.GetCollisionEvents(other, this.collisionEvents);
             for (int index = 0; index < collisionEvents; ++index)
             {
                 Gun GunInParent = this.collisionEvents[index].colliderComponent.GetComponentInParent<Gun>();
                 if (GunInParent && !GunInParent.HasPowder)
                     GunInParent.AddPowder();
-                    
             }
         }
     }
@@ -87,13 +93,6 @@ namespace HighSeas
             SpawnEffectFlowLoop();
             effectFlow.Play();
             liquidFlow = true;
-        }
-    }
-    class Gunpowder : LiquidData
-    {
-        public override void OnLiquidReception(LiquidReceiver liquidReceiver, float dilution, LiquidContainer liquidContainer)
-        {
-            base.OnLiquidReception(liquidReceiver, dilution, liquidContainer);
         }
     }
 }

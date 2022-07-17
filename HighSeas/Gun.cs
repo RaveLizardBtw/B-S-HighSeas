@@ -16,9 +16,13 @@ namespace HighSeas
         public int MaxAmo;
         public bool HasPowder = true;
         public bool isShot = false;
+        public bool NeedsPowder;
+        public bool NeedsBullet;
+        public float Damage;
 
         private Collider BulletTriggerCollider;
         private Interactable.Action Action;
+        private Interactable.Action ReloadAction;
         private float ShootForce;
         private float ShootCooldown;
         private string SFXID;
@@ -36,7 +40,7 @@ namespace HighSeas
         public delegate void ReloadEvent(Gun gun, EventTime eventTime);
         public event ReloadEvent OnReloadEvent;
 
-        public void Setup(float newShootForce, float newShootCooldown, float newRecoil, string newSFXID, string newReloadSFXID, string newProjectileID, bool newProjectileUseGravity, float newProjectileLife, int newMaxAmo, Interactable.Action newAction)
+        public void Setup(float newDamage, float newShootForce, float newShootCooldown, float newRecoil, string newSFXID, string newReloadSFXID, string newProjectileID, bool newProjectileUseGravity, bool newNeedsPowder, bool newNeedsBullet, float newProjectileLife, int newMaxAmo, Interactable.Action newAction, Interactable.Action newReloadAction)
         {
             ShootForce = newShootForce;
             ShootCooldown = newShootCooldown;
@@ -45,9 +49,13 @@ namespace HighSeas
             ProjectileID = newProjectileID;
             ProjectileUseGravity = newProjectileUseGravity;
             Action = newAction;
+            ReloadAction = newReloadAction;
             MaxAmo = newMaxAmo;
             ProjectileLife = newProjectileLife;
             Recoil = newRecoil;
+            NeedsPowder = newNeedsPowder;
+            NeedsBullet = newNeedsBullet;
+            Damage = newDamage;
         }
 
         public void Awake()
@@ -58,20 +66,17 @@ namespace HighSeas
             ReloadHandle = item.GetCustomReference("ReloadHandle").GetComponent<Handle>();
             animator = GetComponent<Animator>();
             item.OnHeldActionEvent += Item_OnHeldActionEvent;
+            HighSeasLevelManager.AllGunsInLevel.Add(this);
         }
 
         private void Item_OnHeldActionEvent(RagdollHand ragdollHand, Handle handle, Interactable.Action action)
         {
-            if (action == Action && CanShoot && ShotsRemaining > 0 && HasPowder && !isShot && handle != ReloadHandle)
-            {
+            if ((action == Action && CanShoot && ShotsRemaining > 0 && HasPowder && !isShot && handle != ReloadHandle) || (action == Action && CanShoot && ShotsRemaining > 0 && NeedsPowder && HasPowder && !NeedsBullet && !isShot && handle != ReloadHandle) || (action == Action && CanShoot && NeedsBullet && ShotsRemaining > 0 && !NeedsPowder && !isShot && handle != ReloadHandle) || (action == Action && CanShoot && !NeedsBullet && !NeedsPowder && !isShot && handle != ReloadHandle))
                 Shoot();
-            }
-            if(action == Action && isShot && handle == ReloadHandle)
-            {
-                isShot = false;
-                Catalog.GetData<EffectData>(ReloadSFXID).Spawn(item.flyDirRef).Play();
-                animator.SetBool("Fired", false);
-            }
+            if (action == ReloadAction && isShot && handle != ReloadHandle)
+                CockBack();
+            else if (action == Action && isShot && handle == ReloadHandle)
+                CockBack();
         }
 
         public void Shoot()
@@ -86,6 +91,7 @@ namespace HighSeas
             Catalog.GetData<EffectData>(SFXID).Spawn(item.flyDirRef).Play();
             Catalog.GetData<ItemData>(ProjectileID).SpawnAsync(Projectile =>
             {
+                Projectile.gameObject.AddComponent<Pellet>().Setup(Damage, this);
                 Projectile.transform.position = item.flyDirRef.position;
                 Projectile.transform.rotation = Quaternion.identity;
                 Projectile.rb.useGravity = ProjectileUseGravity;
@@ -98,6 +104,12 @@ namespace HighSeas
             OnShootEvent?.Invoke(this, EventTime.OnStart);
         }
 
+        public void CockBack()
+        {
+            isShot = false;
+            Catalog.GetData<EffectData>(ReloadSFXID).Spawn(item.flyDirRef).Play();
+            animator.SetBool("Fired", false);
+        }
         public void AddPowder()
         {
             HasPowder = true;
@@ -119,29 +131,46 @@ namespace HighSeas
             yield return new WaitForSeconds(CooldownTime);
             CanShoot = true;
         }
+        public string GetItemSpellID(Item item)
+        {
+            foreach (Imbue imbue in item.imbues)
+            {
+                if (imbue.spellCastBase != null)
+                    return imbue.spellCastBase.id;
+            }
+            return null;
+        }
     }
 
     public class GunModule : ItemModule
     {
         private Interactable.Action SetShootAction;
+        private Interactable.Action SetReloadAction;
 
         public float ShootForce;
         public float ShootCooldown;
         public string SFXID;
         public string ReloadSFXID;
         public string Action;
+        public string ReloadAction;
         public string ProjectileID;
         public bool ProjectileUseGravity;
         public float ProjectileLife;
         public float Recoil;
         public int MaxAmo;
+        public bool NeedsPowder;
+        public bool NeedsBullet;
+        public float Damage;
         public override void OnItemLoaded(Item item)
         {
             base.OnItemLoaded(item);
             if (Action == "Use" || Action == "Trigger")
                 SetShootAction = Interactable.Action.UseStart;
             else SetShootAction = Interactable.Action.AlternateUseStart;
-            item.gameObject.AddComponent<Gun>().Setup(ShootForce, ShootCooldown, Recoil, SFXID, ReloadSFXID, ProjectileID, ProjectileUseGravity, ProjectileLife, MaxAmo, SetShootAction);
+            if (ReloadAction == "AltUse" || ReloadAction == "AlternateUse" || ReloadAction == "SpellWheel")
+                SetReloadAction = Interactable.Action.AlternateUseStart;
+            else SetReloadAction = Interactable.Action.UseStart;
+            item.gameObject.AddComponent<Gun>().Setup(Damage, ShootForce, ShootCooldown, Recoil, SFXID, ReloadSFXID, ProjectileID, ProjectileUseGravity, NeedsPowder, NeedsBullet, ProjectileLife, MaxAmo, SetShootAction, SetReloadAction);
         }
     }
 }
