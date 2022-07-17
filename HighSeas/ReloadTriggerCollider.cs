@@ -16,9 +16,9 @@ namespace HighSeas
         }
         private void OnTriggerEnter(Collider other)
         {
-            if(other.GetComponentInParent<Bullet>() is Bullet bullet)
+            if(other.GetComponentInParent<Pellet>() is Pellet bullet)
             {
-                if (gun.ShotsRemaining > gun.MaxAmo)
+                if (gun.ShotsRemaining >= gun.MaxAmo)
                     return;
                 gun.Reload();
                 bullet.item.Despawn();
