@@ -71,7 +71,7 @@ namespace HighSeas
 
         private void Item_OnHeldActionEvent(RagdollHand ragdollHand, Handle handle, Interactable.Action action)
         {
-            if ((action == Action && CanShoot && ShotsRemaining > 0 && HasPowder && !isShot && handle != ReloadHandle) || (action == Action && CanShoot && ShotsRemaining > 0 && NeedsPowder && HasPowder && !NeedsBullet && !isShot && handle != ReloadHandle) || (action == Action && CanShoot && NeedsBullet && ShotsRemaining > 0 && !NeedsPowder && !isShot && handle != ReloadHandle) || (action == Action && CanShoot && !NeedsBullet && !NeedsPowder && !isShot && handle != ReloadHandle))
+            if ((action == Action && CanShoot && ShotsRemaining > 0 && HasPowder && !isShot && handle != ReloadHandle) || (action == Action && CanShoot && NeedsPowder && HasPowder && !NeedsBullet && !isShot && handle != ReloadHandle) || (action == Action && CanShoot && NeedsBullet && ShotsRemaining > 0 && !NeedsPowder && !isShot && handle != ReloadHandle) || (action == Action && CanShoot && !NeedsBullet && !NeedsPowder && !isShot && handle != ReloadHandle))
                 Shoot();
             if (action == ReloadAction && isShot && handle != ReloadHandle)
                 CockBack();

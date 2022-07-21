@@ -9,13 +9,13 @@ namespace HighSeas
     class HighSeasLevelManager : LevelModule
     {
         public static List<Gun> AllGunsInLevel;
-        public bool OverrideGunValues;
-        public bool NeedsPowder;
-        public bool NeedsBullet;
+        public static bool OverrideGunValues;
+        public static bool NeedsPowder;
+        public static bool NeedsBullet;
 
         public override IEnumerator OnLoadCoroutine()
         {
-            AllGunsInLevel = new List<Gun>() { };
+            AllGunsInLevel = new List<Gun>();
             return base.OnLoadCoroutine();
         }
 
