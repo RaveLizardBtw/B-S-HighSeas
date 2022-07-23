@@ -15,8 +15,18 @@ namespace HighSeas
 
         public override IEnumerator OnLoadCoroutine()
         {
+            EventManager.onCreatureKill += EventManager_onCreatureKill;
             AllGunsInLevel = new List<Gun>();
             return base.OnLoadCoroutine();
+        }
+        private void EventManager_onCreatureKill(Creature creature, Player player, CollisionInstance collisionInstance, EventTime eventTime)
+        {
+            if (eventTime == EventTime.OnEnd && UnityEngine.Random.value > 0.5f)
+                Catalog.GetData<ItemData>("Pellet", false).SpawnAsync(item =>
+                {
+                    item.transform.position = creature.handLeft.transform.position;
+                    item.transform.rotation = Quaternion.identity;
+                });
         }
 
         public override void Update()

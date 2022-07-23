@@ -30,7 +30,7 @@ namespace HighSeas
                 liquidContainer.contents.Add(content.Clone());
             liquidContainer.liquidLevelText = item.GetCustomReference("PotionIndicator").GetComponent<Text>();
             liquidContainer.flow = item.GetCustomReference("PotionFlow");
-            liquidContainer.flow.transform.position += liquidContainer.flow.transform.up * 0.04f;
+            //liquidContainer.flow.transform.position += liquidContainer.flow.transform.up * 0.04f;
             liquidContainer.effectFlowId = effectFlowId;
             liquidContainer.maxLevel = maxLevel;
             liquidContainer.collisionLayer = collisionLayer;

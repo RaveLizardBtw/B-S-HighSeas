@@ -40,6 +40,9 @@ namespace HighSeas
         public delegate void ReloadEvent(Gun gun, EventTime eventTime);
         public event ReloadEvent OnReloadEvent;
 
+        public delegate void SparkEvent(Gun gun, EventTime eventTime);
+        public event SparkEvent OnSparkEvent;
+
         public void Setup(float newDamage, float newShootForce, float newShootCooldown, float newRecoil, string newSFXID, string newReloadSFXID, string newProjectileID, bool newProjectileUseGravity, bool newNeedsPowder, bool newNeedsBullet, float newProjectileLife, int newMaxAmo, Interactable.Action newAction, Interactable.Action newReloadAction)
         {
             ShootForce = newShootForce;
@@ -73,6 +76,8 @@ namespace HighSeas
         {
             if ((action == Action && CanShoot && ShotsRemaining > 0 && HasPowder && !isShot && handle != ReloadHandle) || (action == Action && CanShoot && NeedsPowder && HasPowder && !NeedsBullet && !isShot && handle != ReloadHandle) || (action == Action && CanShoot && NeedsBullet && ShotsRemaining > 0 && !NeedsPowder && !isShot && handle != ReloadHandle) || (action == Action && CanShoot && !NeedsBullet && !NeedsPowder && !isShot && handle != ReloadHandle))
                 Shoot();
+            if ((action == Action && !isShot && NeedsBullet && NeedsPowder && HasPowder && ShotsRemaining <= 0 && handle != ReloadHandle))
+                Spark();
             if (action == ReloadAction && isShot && handle != ReloadHandle)
                 CockBack();
             else if (action == Action && isShot && handle == ReloadHandle)
@@ -104,6 +109,14 @@ namespace HighSeas
             OnShootEvent?.Invoke(this, EventTime.OnStart);
         }
 
+        public void Spark()
+        {
+            OnSparkEvent?.Invoke(this, EventTime.OnStart);
+            isShot = true;
+            Catalog.GetData<EffectData>(ReloadSFXID).Spawn(item.flyDirRef).Play();
+            animator.SetBool("Fired", true);
+            OnSparkEvent?.Invoke(this, EventTime.OnEnd);
+        }
         public void CockBack()
         {
             isShot = false;

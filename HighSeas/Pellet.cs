@@ -11,6 +11,10 @@ namespace HighSeas
         public Gun gun;
         public Item item;
         public float _Damage;
+        public Creature HitCreature;
+
+        public delegate void HitCreatureEvent(Pellet pellet, EventTime eventTime);
+        public event HitCreatureEvent OnPelletHitCreature;
         public void Setup(float Damage, Gun newGun)
         {
             item = GetComponent<Item>();
@@ -23,8 +27,11 @@ namespace HighSeas
         {
             if (collision.collider.GetComponentInParent<Creature>() is Creature creature && !creature.isPlayer && collision.relativeVelocity.magnitude > 1)
             {
+                OnPelletHitCreature?.Invoke(this, EventTime.OnStart);
                 creature.Damage(new CollisionInstance(new DamageStruct(DamageType.Pierce, _Damage)));
                 creature.TryPush(Creature.PushType.Hit, collision.contacts[0].normal, 3);
+                HitCreature = creature;
+                OnPelletHitCreature?.Invoke(this, EventTime.OnEnd);
             }
         }
 

@@ -34,5 +34,4 @@ namespace HighSeas
             Player.local.locomotion.rb.AddForce(-playerHand.Velocity() * SwimSpeed, ForceMode.VelocityChange);
         }
     }
-
 }

@@ -83,6 +83,7 @@
     <Compile Include="Gunpowder.cs" />
     <Compile Include="HighSeasBook.cs" />
     <Compile Include="HighSeasLevelManager.cs" />
+    <Compile Include="Molotov.cs" />
     <Compile Include="Pellet.cs" />
     <Compile Include="Grenade.cs" />
     <Compile Include="Gun.cs" />
