@@ -71,6 +71,8 @@ namespace HighSeas
             {
                 if (effect is EffectParticle)
                 {
+                    if (!effect.gameObject.GetComponent<GunpowderParticleCollisionSpawner>())
+                        effect.gameObject.AddComponent<GunpowderParticleCollisionSpawner>();
                     foreach (EffectParticleChild child in (effect as EffectParticle).childs)
                     {
                         GunpowderParticleCollisionSpawner collisionSpawner = child.GetComponent<GunpowderParticleCollisionSpawner>();

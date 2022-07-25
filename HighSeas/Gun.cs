@@ -20,6 +20,7 @@ namespace HighSeas
         public bool NeedsBullet;
         public float Damage;
 
+        private Transform HitPosition;
         private Collider BulletTriggerCollider;
         private Interactable.Action Action;
         private Interactable.Action ReloadAction;
@@ -27,6 +28,7 @@ namespace HighSeas
         private float ShootCooldown;
         private string SFXID;
         private string ReloadSFXID;
+        private string SparkVFXID;
         private string ProjectileID;
         private bool ProjectileUseGravity;
         private float ProjectileLife;
@@ -43,7 +45,7 @@ namespace HighSeas
         public delegate void SparkEvent(Gun gun, EventTime eventTime);
         public event SparkEvent OnSparkEvent;
 
-        public void Setup(float newDamage, float newShootForce, float newShootCooldown, float newRecoil, string newSFXID, string newReloadSFXID, string newProjectileID, bool newProjectileUseGravity, bool newNeedsPowder, bool newNeedsBullet, float newProjectileLife, int newMaxAmo, Interactable.Action newAction, Interactable.Action newReloadAction)
+        public void Setup(float newDamage, float newShootForce, float newShootCooldown, float newRecoil, string newSFXID, string newReloadSFXID, string newSparkSFXID,string newProjectileID, bool newProjectileUseGravity, bool newNeedsPowder, bool newNeedsBullet, float newProjectileLife, int newMaxAmo, Interactable.Action newAction, Interactable.Action newReloadAction)
         {
             ShootForce = newShootForce;
             ShootCooldown = newShootCooldown;
@@ -59,6 +61,7 @@ namespace HighSeas
             NeedsPowder = newNeedsPowder;
             NeedsBullet = newNeedsBullet;
             Damage = newDamage;
+            SparkVFXID = newSparkSFXID;
         }
 
         public void Awake()
@@ -67,6 +70,7 @@ namespace HighSeas
             BulletTriggerCollider = item.GetCustomReference("BulletTriggerCollider").GetComponent<Collider>();
             BulletTriggerCollider.gameObject.AddComponent<ReloadTriggerCollider>();
             ReloadHandle = item.GetCustomReference("ReloadHandle").GetComponent<Handle>();
+            HitPosition = item.GetCustomReference("HitPosition");
             animator = GetComponent<Animator>();
             item.OnHeldActionEvent += Item_OnHeldActionEvent;
             HighSeasLevelManager.AllGunsInLevel.Add(this);
@@ -76,7 +80,7 @@ namespace HighSeas
         {
             if ((action == Action && CanShoot && ShotsRemaining > 0 && HasPowder && !isShot && handle != ReloadHandle) || (action == Action && CanShoot && NeedsPowder && HasPowder && !NeedsBullet && !isShot && handle != ReloadHandle) || (action == Action && CanShoot && NeedsBullet && ShotsRemaining > 0 && !NeedsPowder && !isShot && handle != ReloadHandle) || (action == Action && CanShoot && !NeedsBullet && !NeedsPowder && !isShot && handle != ReloadHandle))
                 Shoot();
-            if ((action == Action && !isShot && NeedsBullet && NeedsPowder && HasPowder && ShotsRemaining <= 0 && handle != ReloadHandle))
+            if ((action == Action && !isShot && NeedsBullet && NeedsPowder && !HasPowder && ShotsRemaining <= 0 && handle != ReloadHandle) || (action == Action && !isShot && NeedsBullet && NeedsPowder && HasPowder && ShotsRemaining >= 0 && handle != ReloadHandle) || (action == Action && !isShot && NeedsBullet && NeedsPowder && HasPowder && ShotsRemaining <= 0 && handle != ReloadHandle))
                 Spark();
             if (action == ReloadAction && isShot && handle != ReloadHandle)
                 CockBack();
@@ -113,7 +117,7 @@ namespace HighSeas
         {
             OnSparkEvent?.Invoke(this, EventTime.OnStart);
             isShot = true;
-            Catalog.GetData<EffectData>(ReloadSFXID).Spawn(item.flyDirRef).Play();
+            Catalog.GetData<EffectData>(SparkVFXID).Spawn(HitPosition).Play();
             animator.SetBool("Fired", true);
             OnSparkEvent?.Invoke(this, EventTime.OnEnd);
         }
@@ -164,6 +168,7 @@ namespace HighSeas
         public float ShootCooldown;
         public string SFXID;
         public string ReloadSFXID;
+        public string SparkVFXID;
         public string Action;
         public string ReloadAction;
         public string ProjectileID;
@@ -183,7 +188,7 @@ namespace HighSeas
             if (ReloadAction == "AltUse" || ReloadAction == "AlternateUse" || ReloadAction == "SpellWheel")
                 SetReloadAction = Interactable.Action.AlternateUseStart;
             else SetReloadAction = Interactable.Action.UseStart;
-            item.gameObject.AddComponent<Gun>().Setup(Damage, ShootForce, ShootCooldown, Recoil, SFXID, ReloadSFXID, ProjectileID, ProjectileUseGravity, NeedsPowder, NeedsBullet, ProjectileLife, MaxAmo, SetShootAction, SetReloadAction);
+            item.gameObject.AddComponent<Gun>().Setup(Damage, ShootForce, ShootCooldown, Recoil, SFXID, ReloadSFXID, SparkVFXID, ProjectileID, ProjectileUseGravity, NeedsPowder, NeedsBullet, ProjectileLife, MaxAmo, SetShootAction, SetReloadAction);
         }
     }
 }

@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\Destiny 2\steamapps\common\Blade &amp; Sorcery\BladeAndSorcery_Data\Managed\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="RainyReignGames.Collections, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>D:\Destiny 2\steamapps\common\Blade &amp; Sorcery\BladeAndSorcery_Data\Managed\RainyReignGames.Collections.dll</HintPath>
@@ -50,6 +54,14 @@
     <Reference Include="ThunderRoad">
       <HintPath>D:\Destiny 2\steamapps\common\Blade &amp; Sorcery\BladeAndSorcery_Data\Managed\ThunderRoad.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.Addressables, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\Destiny 2\steamapps\common\Blade &amp; Sorcery\BladeAndSorcery_Data\Managed\Unity.Addressables.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ResourceManager, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\Destiny 2\steamapps\common\Blade &amp; Sorcery\BladeAndSorcery_Data\Managed\Unity.ResourceManager.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>D:\Destiny 2\steamapps\common\Blade &amp; Sorcery\BladeAndSorcery_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
@@ -61,6 +73,10 @@
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>D:\Destiny 2\steamapps\common\Blade &amp; Sorcery\BladeAndSorcery_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.JSONSerializeModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\Destiny 2\steamapps\common\Blade &amp; Sorcery\BladeAndSorcery_Data\Managed\UnityEngine.JSONSerializeModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ParticleSystemModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -81,6 +97,7 @@
   <ItemGroup>
     <Compile Include="Bottle.cs" />
     <Compile Include="Gunpowder.cs" />
+    <Compile Include="HiddenItem.cs" />
     <Compile Include="HighSeasBook.cs" />
     <Compile Include="HighSeasLevelManager.cs" />
     <Compile Include="Molotov.cs" />
@@ -88,8 +105,10 @@
     <Compile Include="Grenade.cs" />
     <Compile Include="Gun.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Save.cs" />
     <Compile Include="Swimming.cs" />
     <Compile Include="ReloadTriggerCollider.cs" />
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

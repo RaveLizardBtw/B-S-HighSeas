@@ -19,10 +19,18 @@ namespace HighSeas
             AllGunsInLevel = new List<Gun>();
             return base.OnLoadCoroutine();
         }
+
         private void EventManager_onCreatureKill(Creature creature, Player player, CollisionInstance collisionInstance, EventTime eventTime)
         {
-            if (eventTime == EventTime.OnEnd && UnityEngine.Random.value > 0.5f)
+            float Random = UnityEngine.Random.value;
+            if (eventTime == EventTime.OnEnd && Random > 0.5f)
                 Catalog.GetData<ItemData>("Pellet", false).SpawnAsync(item =>
+                {
+                    item.transform.position = creature.handLeft.transform.position;
+                    item.transform.rotation = Quaternion.identity;
+                });
+            else if (eventTime == EventTime.OnEnd && Random < 0.5f)
+                Catalog.GetData<ItemData>("PirateGrenade", false).SpawnAsync(item =>
                 {
                     item.transform.position = creature.handLeft.transform.position;
                     item.transform.rotation = Quaternion.identity;
@@ -42,4 +50,5 @@ namespace HighSeas
             }
         }
     }
+
 }
