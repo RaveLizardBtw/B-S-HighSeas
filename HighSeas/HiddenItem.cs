@@ -29,7 +29,8 @@ namespace HighSeas
             {
                 SaveLevel.FoundItems.Add(item.data.id);
                 Catalog.GetData<ItemData>(item.itemId).purchasable = true;
-                SaveLevel.StatDump();
+                HighSeasLevelManager.AddMoney(100);
+                SaveLevel.Save();
             }
         }
     }

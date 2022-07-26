@@ -10,6 +10,7 @@ namespace HighSeas
     {
         public static List<Gun> AllGunsInLevel;
         public static List<String> ItemsToDrop;
+        public static int Money;
         public static float DropChance;
         public static bool OverrideGunValues;
         public static bool NeedsPowder;
@@ -33,6 +34,12 @@ namespace HighSeas
                 gun.NeedsPowder = NeedsPowder;
                 gun.NeedsBullet = NeedsBullet;
             }
+        }
+
+        public static void AddMoney(int ammount)
+        {
+            Money += ammount;
+            HighSeasBook.moneyText.text = Money.ToString();
         }
     }
 

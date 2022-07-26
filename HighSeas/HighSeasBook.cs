@@ -13,6 +13,7 @@ namespace HighSeas
         public Toggle NeedsBulletChangedToggle;
         public Toggle NeedsPowderChangedToggle;
         public Button SaveButton;
+        public static Text moneyText;
         public override void Init(MenuData menuData, Menu menu)
         {
             base.Init(menuData, menu);
@@ -20,6 +21,7 @@ namespace HighSeas
             NeedsBulletChangedToggle = menu.GetCustomReference("NeedsBulletToggle").GetComponent<Toggle>();
             NeedsPowderChangedToggle = menu.GetCustomReference("NeedsPowderToggle").GetComponent<Toggle>();
             SaveButton = menu.GetCustomReference("SaveButton").GetComponent<Button>();
+            moneyText = menu.GetCustomReference("txt_Money").GetComponent<Text>();
             OverrideGunValuesToggle.onValueChanged.AddListener(new UnityEngine.Events.UnityAction<bool>(OverrideGunValues));
             NeedsBulletChangedToggle.onValueChanged.AddListener(new UnityEngine.Events.UnityAction<bool>(NeedsBulletChanged));
             NeedsPowderChangedToggle.onValueChanged.AddListener(new UnityEngine.Events.UnityAction<bool>(NeedsPowderChanged));
@@ -39,7 +41,7 @@ namespace HighSeas
         }
         void OnSavePressed()
         {
-            SaveLevel.StatDump();
+            SaveLevel.Save();
         }
     }
 }

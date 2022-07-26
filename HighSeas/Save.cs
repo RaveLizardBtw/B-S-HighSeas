@@ -20,6 +20,7 @@ namespace HighSeas
     public class Save
     {
         public List<String> FoundItems { get; set; }
+        public int Money { get; set; }
     }
 
     public class SaveLevel : LevelModule
@@ -32,6 +33,7 @@ namespace HighSeas
 
         public string SourceFolder;
         public static List<String> FoundItems;
+        public static int Money;
         public static String SaveFolder { get; private set; }
         public override IEnumerator OnLoadCoroutine()
         {
@@ -45,17 +47,17 @@ namespace HighSeas
         {
             if (eventTime == EventTime.OnEnd)
             {
-                StatRetrieve();
+                Load();
             }
         }
         public void EventManager_onLevelUnload(LevelData levelData, EventTime eventTime)
         {
             if (level.data.id != "Master" && level.data.id != "CharacterSelection" && eventTime == EventTime.OnEnd)
             {
-                StatDump();
+                Save();
             }
         }
-        public static void StatRetrieve()
+        public static void Load()
         {
             SaveFolder = Path.Combine(Application.streamingAssetsPath, "Mods/HighSeas");
             string jsonFile = Path.Combine(SaveFolder, "Save.json");
@@ -64,17 +66,20 @@ namespace HighSeas
                 OnLoadSave?.Invoke(null, EventTime.OnStart);
                 Save worldSave = JsonConvert.DeserializeObject<Save>(File.ReadAllText(jsonFile));
                 FoundItems = worldSave?.FoundItems;
+                Money = (int)worldSave?.Money;
                 foreach(string s in FoundItems)
                     Catalog.GetData<ItemData>(s).purchasable = true;
+                HighSeasBook.moneyText.text = Money.ToString();
                 OnLoadSave?.Invoke(worldSave, EventTime.OnEnd);
             }
         }
-        public static void StatDump()
+        public static void Save()
         {
             OnSaveEvent?.Invoke(null, EventTime.OnStart);
             Save HighSeasSave = new Save()
             {
-                FoundItems = SaveLevel.FoundItems
+                FoundItems = SaveLevel.FoundItems,
+                Money = HighSeasLevelManager.Money
             };
             string contents = JsonConvert.SerializeObject((object)HighSeasSave, Formatting.Indented);
             File.WriteAllText(Path.Combine(SaveFolder, "Save.json"), JsonConvert.SerializeObject(HighSeasSave));

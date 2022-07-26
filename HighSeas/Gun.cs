@@ -27,6 +27,7 @@ namespace HighSeas
         private float ShootForce;
         private float ShootCooldown;
         private string SFXID;
+        private string SmokeVFXID;
         private string ReloadSFXID;
         private string SparkVFXID;
         private string ProjectileID;
@@ -45,7 +46,7 @@ namespace HighSeas
         public delegate void SparkEvent(Gun gun, EventTime eventTime);
         public event SparkEvent OnSparkEvent;
 
-        public void Setup(float newDamage, float newShootForce, float newShootCooldown, float newRecoil, string newSFXID, string newReloadSFXID, string newSparkSFXID,string newProjectileID, bool newProjectileUseGravity, bool newNeedsPowder, bool newNeedsBullet, float newProjectileLife, int newMaxAmo, Interactable.Action newAction, Interactable.Action newReloadAction)
+        public void Setup(float newDamage, float newShootForce, float newShootCooldown, float newRecoil, string newSFXID, string newSmokeVFXID, string newReloadSFXID, string newSparkSFXID,string newProjectileID, bool newProjectileUseGravity, bool newNeedsPowder, bool newNeedsBullet, float newProjectileLife, int newMaxAmo, Interactable.Action newAction, Interactable.Action newReloadAction)
         {
             ShootForce = newShootForce;
             ShootCooldown = newShootCooldown;
@@ -62,6 +63,7 @@ namespace HighSeas
             NeedsBullet = newNeedsBullet;
             Damage = newDamage;
             SparkVFXID = newSparkSFXID;
+            SmokeVFXID = newSmokeVFXID;
         }
 
         public void Awake()
@@ -98,6 +100,7 @@ namespace HighSeas
             animator.SetBool("Fired", true);
             item.rb.AddForce(-item.flyDirRef.forward * Recoil, ForceMode.Impulse);
             Catalog.GetData<EffectData>(SFXID).Spawn(item.flyDirRef).Play();
+            Catalog.GetData<EffectData>(SmokeVFXID).Spawn(HitPosition).Play();
             Catalog.GetData<ItemData>(ProjectileID).SpawnAsync(Projectile =>
             {
                 Projectile.gameObject.AddComponent<Pellet>().Setup(Damage, this);
@@ -167,6 +170,7 @@ namespace HighSeas
         public float ShootForce;
         public float ShootCooldown;
         public string SFXID;
+        public string SmokeVFXID;
         public string ReloadSFXID;
         public string SparkVFXID;
         public string Action;
@@ -188,7 +192,7 @@ namespace HighSeas
             if (ReloadAction == "AltUse" || ReloadAction == "AlternateUse" || ReloadAction == "SpellWheel")
                 SetReloadAction = Interactable.Action.AlternateUseStart;
             else SetReloadAction = Interactable.Action.UseStart;
-            item.gameObject.AddComponent<Gun>().Setup(Damage, ShootForce, ShootCooldown, Recoil, SFXID, ReloadSFXID, SparkVFXID, ProjectileID, ProjectileUseGravity, NeedsPowder, NeedsBullet, ProjectileLife, MaxAmo, SetShootAction, SetReloadAction);
+            item.gameObject.AddComponent<Gun>().Setup(Damage, ShootForce, ShootCooldown, Recoil, SFXID, SmokeVFXID, ReloadSFXID, SparkVFXID, ProjectileID, ProjectileUseGravity, NeedsPowder, NeedsBullet, ProjectileLife, MaxAmo, SetShootAction, SetReloadAction);
         }
     }
 }
