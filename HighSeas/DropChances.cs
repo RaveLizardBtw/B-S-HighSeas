@@ -24,6 +24,9 @@ namespace HighSeas
     }
     public class DropChancesLevel : LevelModule
     {
+        public delegate void DropEvent(Creature creature, EventTime eventTime);
+        public static event DropEvent OnDropEvent;
+
         public string SourceFolder;
         public static List<String> ItemsToDrop;
         public static float DropChance;
@@ -31,6 +34,7 @@ namespace HighSeas
         public override IEnumerator OnLoadCoroutine()
         {
             ItemsToDrop = new List<string>();
+            EventManager.onCreatureKill += EventManager_onCreatureKill;
             EventManager.onLevelLoad += EventManager_onLevelLoad;
             return base.OnLoadCoroutine();
         }
@@ -39,6 +43,22 @@ namespace HighSeas
             if (eventTime == EventTime.OnEnd)
             {
                 StatRetrieve();
+            }
+        }
+        private void EventManager_onCreatureKill(Creature creature, Player player, CollisionInstance collisionInstance, EventTime eventTime)
+        {
+            float Random = UnityEngine.Random.value;
+            if (eventTime == EventTime.OnEnd && Random < DropChance)
+            {
+                OnDropEvent?.Invoke(creature, EventTime.OnStart);
+                var ran = new System.Random();
+                int index = ran.Next(ItemsToDrop.Count);
+                Catalog.GetData<ItemData>(ItemsToDrop[index], false).SpawnAsync(item =>
+                {
+                    item.transform.position = creature.handLeft.transform.position;
+                    item.transform.rotation = Quaternion.identity;
+                });
+                OnDropEvent?.Invoke(creature, EventTime.OnEnd);
             }
         }
         public static void StatRetrieve()

@@ -24,6 +24,12 @@ namespace HighSeas
 
     public class SaveLevel : LevelModule
     {
+        public delegate void SaveEvent(Save saveFile, EventTime eventTime);
+        public static event SaveEvent OnSaveEvent;
+
+        public delegate void LoadSaveEvent(Save saveFile, EventTime eventTime);
+        public static event LoadSaveEvent OnLoadSave;
+
         public string SourceFolder;
         public static List<String> FoundItems;
         public static String SaveFolder { get; private set; }
@@ -51,28 +57,28 @@ namespace HighSeas
         }
         public static void StatRetrieve()
         {
-            UriBuilder uri = new UriBuilder(Assembly.GetExecutingAssembly().CodeBase);
             SaveFolder = Path.Combine(Application.streamingAssetsPath, "Mods/HighSeas");
             string jsonFile = Path.Combine(SaveFolder, "Save.json");
             if (File.Exists(jsonFile))
             {
+                OnLoadSave?.Invoke(null, EventTime.OnStart);
                 Save worldSave = JsonConvert.DeserializeObject<Save>(File.ReadAllText(jsonFile));
                 FoundItems = worldSave?.FoundItems;
                 foreach(string s in FoundItems)
                     Catalog.GetData<ItemData>(s).purchasable = true;
-                Debug.Log("Stats Retrieved");
-                Catalog.Refresh();
+                OnLoadSave?.Invoke(worldSave, EventTime.OnEnd);
             }
         }
         public static void StatDump()
         {
+            OnSaveEvent?.Invoke(null, EventTime.OnStart);
             Save HighSeasSave = new Save()
             {
                 FoundItems = SaveLevel.FoundItems
             };
             string contents = JsonConvert.SerializeObject((object)HighSeasSave, Formatting.Indented);
             File.WriteAllText(Path.Combine(SaveFolder, "Save.json"), JsonConvert.SerializeObject(HighSeasSave));
-            Debug.Log("Stats Dumped");
+            OnSaveEvent?.Invoke(null, EventTime.OnEnd);
         }
     }
 }
