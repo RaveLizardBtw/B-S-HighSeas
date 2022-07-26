@@ -9,6 +9,8 @@ namespace HighSeas
     class HighSeasLevelManager : LevelModule
     {
         public static List<Gun> AllGunsInLevel;
+        public static List<String> ItemsToDrop;
+        public static float DropChance;
         public static bool OverrideGunValues;
         public static bool NeedsPowder;
         public static bool NeedsBullet;
@@ -17,24 +19,23 @@ namespace HighSeas
         {
             EventManager.onCreatureKill += EventManager_onCreatureKill;
             AllGunsInLevel = new List<Gun>();
+            ItemsToDrop = new List<string>();
             return base.OnLoadCoroutine();
         }
 
         private void EventManager_onCreatureKill(Creature creature, Player player, CollisionInstance collisionInstance, EventTime eventTime)
         {
             float Random = UnityEngine.Random.value;
-            if (eventTime == EventTime.OnEnd && Random > 0.5f)
-                Catalog.GetData<ItemData>("Pellet", false).SpawnAsync(item =>
+            if(eventTime == EventTime.OnEnd && Random < DropChance)
+            {
+                var ran = new System.Random();
+                int index = ran.Next(ItemsToDrop.Count);
+                Catalog.GetData<ItemData>(ItemsToDrop[index], false).SpawnAsync(item =>
                 {
                     item.transform.position = creature.handLeft.transform.position;
                     item.transform.rotation = Quaternion.identity;
                 });
-            else if (eventTime == EventTime.OnEnd && Random < 0.5f)
-                Catalog.GetData<ItemData>("PirateGrenade", false).SpawnAsync(item =>
-                {
-                    item.transform.position = creature.handLeft.transform.position;
-                    item.transform.rotation = Quaternion.identity;
-                });
+            }
         }
 
         public override void Update()

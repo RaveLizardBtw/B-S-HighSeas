@@ -40,15 +40,13 @@ namespace HighSeas
             if (eventTime == EventTime.OnEnd)
             {
                 StatRetrieve();
-                foreach(string s in FoundItems)
-                    Catalog.GetData<ItemData>(s).purchasable = true;
             }
         }
         public void EventManager_onLevelUnload(LevelData levelData, EventTime eventTime)
         {
-            if (level.data.id != "Master" && level.data.id != "CharacterSelection" && eventTime == EventTime.OnStart)
+            if (level.data.id != "Master" && level.data.id != "CharacterSelection" && eventTime == EventTime.OnEnd)
             {
-                //StatDump();
+                StatDump();
             }
         }
         public static void StatRetrieve()
@@ -63,6 +61,7 @@ namespace HighSeas
                 foreach(string s in FoundItems)
                     Catalog.GetData<ItemData>(s).purchasable = true;
                 Debug.Log("Stats Retrieved");
+                Catalog.Refresh();
             }
         }
         public static void StatDump()

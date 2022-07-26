@@ -61,9 +61,9 @@ namespace HighSeas
                 Timer -= 1 * Time.deltaTime;
             if (Timer <= 0 && !Exploded)
                 Explode();
-            if (!Ignited && item.imbues.Count > 0)
-                foreach (Imbue imbue in item.imbues)
-                    if (imbue.spellCastBase.id == "Fire")
+            if (!Ignited && item?.imbues?.Count > 0)
+                foreach (Imbue imbue in item?.imbues)
+                    if (imbue?.spellCastBase?.id == "Fire")
                         Ignite();
         }
 

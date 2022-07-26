@@ -96,6 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bottle.cs" />
+    <Compile Include="DropChances.cs" />
     <Compile Include="Gunpowder.cs" />
     <Compile Include="HiddenItem.cs" />
     <Compile Include="HighSeasBook.cs" />
