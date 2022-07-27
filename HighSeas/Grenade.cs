@@ -89,12 +89,12 @@ namespace HighSeas
                 float Random = UnityEngine.Random.value;
                 if (collider.GetComponentInParent<Creature>() is Creature creature && !creature.isPlayer)
                 {
-                    creature.ragdoll.SetState(Ragdoll.State.Destabilized);
-                    if (Random < 0.9)
+                    if(!creature.isKilled)
+                        creature.ragdoll.SetState(Ragdoll.State.Destabilized);
+                    if (Random < 0.9 && !creature.isKilled)
                     {
                         creature.Kill();
-                        creature.ragdoll.GetPart(RagdollPart.Type.LeftArm).TrySlice();
-                        creature.ragdoll.GetPart(RagdollPart.Type.RightLeg).TrySlice();
+                        Utils.GetRandomSlicePart(creature).TrySlice();
                     }
                 }
                 collider.attachedRigidbody?.AddExplosionForce(ExplosionForce * collider.attachedRigidbody.mass, item.transform.position, ExplosionRange);

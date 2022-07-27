@@ -10,13 +10,16 @@ namespace HighSeas
 {
     public static class Utils
     {
-        public static RagdollPart GetRandomRagdollPart(this Creature creature, int mask = 0b00011111111111)
+        public static RagdollPart GetRandomSlicePart(this Creature creature)
         {
-            Array values = Enum.GetValues(typeof(RagdollPart.Type));
-            RagdollPart.Type[] type = new RagdollPart.Type[values.Length];
-            type.CopyTo(values, 0);
-            List<RagdollPart.Type> list = type.Where(part => (mask & (int)part) > 0).ToList();
-            return creature.ragdoll.GetPart(list[UnityEngine.Random.Range(0, list.Count())]);
+            List<RagdollPart> parts = new List<RagdollPart>();
+            for (var i = 0; i < creature.ragdoll.parts.Count; i++)
+            {
+                var part = creature.ragdoll.parts[i];
+                if (part.sliceAllowed && ((int)part.type) > 0) parts.Add(part);
+            }
+
+            return parts.ElementAtOrDefault(UnityEngine.Random.Range(0, parts.Count));
         }
     }
 }

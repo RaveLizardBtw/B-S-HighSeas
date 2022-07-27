@@ -11,6 +11,7 @@ namespace HighSeas
 {
     public class GunpowderModule : ItemModule
     {
+        public Item _item;
         private GunpowderLiquidContainer container;
         public List<LiquidData.Content> contents;
         public float maxLevel = 50f;
@@ -23,6 +24,7 @@ namespace HighSeas
         public override void OnItemLoaded(Item item)
         {
             base.OnItemLoaded(item);
+            _item = item;
             GunpowderLiquidContainer liquidContainer = item.gameObject.GetComponent<GunpowderLiquidContainer>();
             if (!liquidContainer)
                 liquidContainer = item.gameObject.AddComponent<GunpowderLiquidContainer>();
@@ -39,22 +41,7 @@ namespace HighSeas
             liquidContainer.flowMinAngle = flowMinAngle;
             liquidContainer.flowMaxAngle = flowMaxAngle;
             container = liquidContainer;
-            item.OnHeldActionEvent += Item_OnHeldActionEvent;
             liquidContainer.Init(item);
-        }
-
-        private void Item_OnHeldActionEvent(RagdollHand ragdollHand, Handle handle, Interactable.Action action)
-        {
-            if (action == Interactable.Action.AlternateUseStart)
-            {
-                container.AltUsePressed = true;
-            }
-            if (action == Interactable.Action.AlternateUseStop)
-            {
-                container.AltUsePressed = false;
-                container.effectFlow.Stop();
-                container.liquidFlow = false;
-            }
         }
     }
     public class GunpowderParticleCollisionSpawner : ParticleCollisionSpawner
@@ -81,7 +68,27 @@ namespace HighSeas
     }
     public class GunpowderLiquidContainer : LiquidContainer
     {
+        public Item item;
         public bool AltUsePressed;
+        public void Start()
+        {
+            item = GetComponent<Item>();
+            item.OnHeldActionEvent += Item_OnHeldActionEvent;
+        }
+        private void Item_OnHeldActionEvent(RagdollHand ragdollHand, Handle handle, Interactable.Action action)
+        {
+            if (action == Interactable.Action.AlternateUseStart)
+            {
+                AltUsePressed = true;
+            }
+            if (action == Interactable.Action.AlternateUseStop)
+            {
+                AltUsePressed = false;
+                if(effectFlow.isPlaying)
+                effectFlow.Stop();
+                liquidFlow = false;
+            }
+        }
         public new void SpawnEffectFlowLoop()
         {
             base.SpawnEffectFlowLoop();
