@@ -11,9 +11,7 @@ namespace HighSeas
 {
     public class GunpowderModule : ItemModule
     {
-        public static bool AltPressed;
-
-        public LiquidContainer container;
+        private GunpowderLiquidContainer container;
         public List<LiquidData.Content> contents;
         public float maxLevel = 50f;
         public LayerMask collisionLayer;
@@ -25,7 +23,6 @@ namespace HighSeas
         public override void OnItemLoaded(Item item)
         {
             base.OnItemLoaded(item);
-            item.OnHeldActionEvent += Item_OnHeldActionEvent;
             GunpowderLiquidContainer liquidContainer = item.gameObject.GetComponent<GunpowderLiquidContainer>();
             if (!liquidContainer)
                 liquidContainer = item.gameObject.AddComponent<GunpowderLiquidContainer>();
@@ -42,16 +39,19 @@ namespace HighSeas
             liquidContainer.flowMinAngle = flowMinAngle;
             liquidContainer.flowMaxAngle = flowMaxAngle;
             container = liquidContainer;
+            item.OnHeldActionEvent += Item_OnHeldActionEvent;
             liquidContainer.Init(item);
         }
 
         private void Item_OnHeldActionEvent(RagdollHand ragdollHand, Handle handle, Interactable.Action action)
         {
             if (action == Interactable.Action.AlternateUseStart)
-                AltPressed = true;
+            {
+                container.AltUsePressed = true;
+            }
             if (action == Interactable.Action.AlternateUseStop)
             {
-                AltPressed = false;
+                container.AltUsePressed = false;
                 container.effectFlow.Stop();
                 container.liquidFlow = false;
             }
@@ -81,6 +81,7 @@ namespace HighSeas
     }
     public class GunpowderLiquidContainer : LiquidContainer
     {
+        public bool AltUsePressed;
         public new void SpawnEffectFlowLoop()
         {
             base.SpawnEffectFlowLoop();
@@ -109,11 +110,11 @@ namespace HighSeas
 
         protected override void OnLiquidFlowStart()
         {
-            if (!GunpowderModule.AltPressed)
+            if (!AltUsePressed)
                 return;
-            SpawnEffectFlowLoop();
-            effectFlow.Play();
-            liquidFlow = true;
+                SpawnEffectFlowLoop();
+                effectFlow.Play();
+                liquidFlow = true;
         }
     }
 }

@@ -44,15 +44,8 @@ namespace HighSeas
             item = GetComponent<Item>();
             if (InteractIgnite)
                 item.OnHeldActionEvent += Item_OnHeldActionEvent;
-            item.mainCollisionHandler.OnCollisionStartEvent += MainCollisionHandler_OnCollisionStartEvent;
             SparksVFX = item.GetCustomReference("Sparks").gameObject;
             Timer = TimeToExplode;
-        }
-
-        private void MainCollisionHandler_OnCollisionStartEvent(CollisionInstance collisionInstance)
-        {
-            if (collisionInstance.targetCollider.material.name == "Blade" || collisionInstance.targetCollider.material.name == "Metal" && collisionInstance.impactVelocity.magnitude > 0.5f)
-                Ignite();
         }
 
         public void Update()

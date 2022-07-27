@@ -57,10 +57,25 @@ namespace HighSeas
                 {
                     item.transform.position = creature.handLeft.transform.position;
                     item.transform.rotation = Quaternion.identity;
+                    if (item.gameObject.GetComponent<CoinPouch>() is CoinPouch pouch)
+                    {
+                    for (int i = pouch.holder.currentQuantity; i < pouch.StartAmmount;)
+                        {
+
+                            Catalog.GetData<ItemData>("Coin").SpawnAsync(newCoin =>
+                            {
+                                newCoin.transform.position = pouch.transform.position;
+                                newCoin.transform.rotation = Quaternion.identity;
+                                pouch.holder.Snap(newCoin, true);
+                            });
+                            i++;
+                        }
+                    }
                 });
                 OnDropEvent?.Invoke(creature, EventTime.OnEnd);
             }
         }
+
         public static void StatRetrieve()
         {
             SaveFolder = Path.Combine(Application.streamingAssetsPath, "Mods/HighSeas");
